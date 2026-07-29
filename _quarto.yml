@@ -1,0 +1,5 @@
+project:
+  title: "From OpenStreetMap APIs to Insightful Data Analysis: Extraction, Analysis, and Mapping with R"
+  output-dir: public
+  lib-dir: libs
+editor: source

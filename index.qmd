@@ -1,0 +1,439 @@
+---
+title: "From OpenStreetMap APIs to Insightful Data Analysis: Extraction, Analysis, and Mapping with R"
+subtitle: "State of the Map - Paris 2026"
+author: "**Louis Laurian**, Timothée Giraud, Matthieu Viry, Ronan Ysebaert"
+institute: Centre pour l'analyse spatiale et la géovisualisation</br><img src="img/logo_footer.svg" width="300" />
+date: 28 08 2026
+date-format: "D MMM YYYY"
+lang: en
+bibliography: references.bib
+csl: "universite-de-montreal-apa.csl"
+format:
+  revealjs:
+    theme : [custom.scss]
+    title-slide: false
+    scrollable: false
+    slide-number: true
+    fig-cap-location: margin
+    fig-align: center
+    smaller: true
+    show-slide-number: all
+    code-line-numbers: false
+    code-block-height: 650px
+    callout-appearance: simple
+    callout-icon: true
+    preview-links: false
+    link-citations: false
+execute:
+  echo: true
+  output: true
+  warning: true
+  include: true
+  cache: true
+knitr:
+  opts_chunk: 
+    fig.path: "figs/"
+    cache.path: "cache/"
+    fig.align: "center"
+    comment: ""
+ 
+---
+
+## Introduction
+
+::: {.incremental}
+- The R Software
+- R and OSM
+- Reproducible Example
+:::
+
+
+:::{.notes}
+In this talk we will talk about how it is possible to use OSM data and related from the statistical software R. 
+
+We have to explain our positionning first. We work for a research laboratory in CNRS. 
+We use OSM data as input for scientific studies. 
+For exemple we have work on interactions across French borders. 
+We have also work intensively on accessibility to rural areas at european scale.
+
+Doing so we use OSM data as is, as a primary source of raw data.
+So we do not contribute in anyway to the OSM data base (in the time spend at the office). 
+
+In order to use the data and tool in a profesional way we use a specific software (and language) made for and by researchers: the R software. 
+To respond to some specific needs we had to extend the R software package ecosystem. 
+We have developped some R package to interact with the OSM DB or some 3rd party tools. 
+
+In this talk we'll start by introducing you to the R Software and its specificities, 
+we'll then present an opiniated list of OSM related R packages, 
+we'll finish with a comprehensive exemple that demonstrate how to use these package. 
+
+:::
+    
+# R
+
+## The R Software
+
+![](img/Rlogo.png){width="150px" fig-align="center"}  
+
+- Free and open source software (GNU GPLv3)
+- Work most OS 
+- Geared towards reproducible research
+- Unified workflows
+
+:::{.notes}
+R stands out as a free and open source programming 
+language and software for statistical computing and data visualization. 
+
+Complemented by more than 23,500 user-contributed packages hosted on the Comprehensive R Archive Network in 2026.
+
+The language’s versatility allows users to build unified workflows within an environment conducive to reproducible research. 
+
+R is widely used for research purposes in many fields beyond statistics, such as biology, social sciences, or geomatics.
+:::
+
+## The R Software Spatial Ecosystem
+
+::: columns
+::: {.column width="50%"}
+#### Vector Data Handling
+`sf` [@R-sf]  
+![](img/logo_sf.gif){width="125px"}
+
+**Main features**
+
+* import / export
+* display
+* geoprocessing
+* support for unprojected data
+* use of the [*simple feature* standard](https://en.wikipedia.org/wiki/Simple_Features)
+:::
+
+::: {.column width="50%"}
+
+#### Raster Data Handling
+
+`terra` [@R-terra]  
+![](img/logo_terra.png){width="115px"}
+
+**Main features**
+
+- import / export
+- display 
+- study area modifications 
+- spatial algebra 
+- transformation and conversion
+:::
+:::
+
+:::{.notes}
+A subset of R packages forms a robust and mature spatial ecosystem that makes it easy to handle and display spatial data.
+
+The 2 main packages used to deal with spatial data are sf and terra. 
+Both are base on GDAL, PROJ and PROJ to handle data import, projections and geoprocessing
+
+:::
+
+
+
+## The R Software Spatial Ecosystem
+
+
+::: columns
+::: {.column width="50%"}
+#### Thematic Cartography
+`mapsf` [@R-mapsf]  
+![](img/logo_mapsf.png){width="115px"}  
+`tmap` [@R-tmap]  
+![](img/logo_tmap.png){width="115px"}   
+`ggplot2` + `ggspatial` [@R-ggspatial]
+![](img/logo_ggplot2.png){width="115px"} 
+
+
+:::
+
+::: {.column width="50%"}
+
+####  Spatial analysis / spatial statistics
+- `spatstat` : Point pattern analysis
+- `gstat` : Variograms and Krigeage
+- `rgeoda` : Geoda with R
+- `GWmodel`, `spgwr` : Geographically Weighted Models
+
+::: {.callout-tip title="[CRAN Task View: Analysis of Spatial Data](https://cran.r-project.org/web/views/Spatial.html)"}
+* Spatial sampling
+* Point pattern analysis
+* Geostatistics
+* Disease mapping and areal data analysis
+* Spatial regression
+* Ecological analysis
+:::
+:::
+
+:::
+
+:::{.notes}
+To complement this overview on the spatial ecosystem of the R software we can have a look at some 
+package for thematic cartograhy.   
+mapsf is developped in our lab. It aims at creating thematic or statistitcal maps. 
+tmap is an alternative to mapsf that use a different syntax, close to the one of the ggplot2 package that also allow to crate thematic maps. 
+
+At last, as a statistical programming language, R allows to use a lot of spatial analysis or spatial statistic computations. You have only a short overview of it. 
+
+:::
+
+
+
+# R and OSM
+
+:::{.notes}
+R provides seamless access to various APIs 
+and tools for downloading and filtering OpenStreetMap data, querying shortest 
+routes and itineraries, or generating both static and interactive maps.
+:::
+
+
+## Overview
+
+THE FIGURE WITH OSM, ALL THE TOOLS AND ALL THE PACKAGES!
+
+
+## Access to the database
+
+:::{.notes}
+We begin with packages that download and extract data, such as `osmextract` and `osmdata`
+:::
+
+## Geocoding and Routing
+:::{.notes}
+we explore solutions that interface third party softwares for geocoding (Nominatim with `tidygeocoder`) 
+and routing (OSRM with `osrm`, Valhalla with `valh`)
+:::
+
+## Cartography
+:::{.notes}
+we address dynamic cartography (using `leaflet`) and 
+creation of static maps from raster tiles (using `maptiles`) or 
+from vector objects (using `maposm`)
+:::
+
+# Reproducible Example
+
+:::{.notes}
+To illustrate the practical application of these tools, we conclude with a short, 
+seamless and fully reproducible example. From the geocoding of an address, 
+to the extraction of amenities or the use of routing engines and till the creation 
+of a publication-ready map, we propose a complete workflow that harness the power 
+of R ecosystem to create insightful analysis from OpenStreetMap data.
+:::
+
+## Géocodage - Trouver des coordonnées à partir d'une adresse
+
+```{r geocode}
+#| code-line-numbers: "4"
+library(sf) # for spatial data processing
+library(tidygeocoder)
+# An address in Batman
+pt <- geo(address = "29 Ahmet Arif Bulvarı, Batman, Türkiye", method = "osm")# use Nominatim API
+# Transform dataframe with X/Y coords to an sf object
+(pt <- st_as_sf(pt, coords = c("long", "lat"), crs = 4326))
+```
+
+## Géocodage - Trouver des coordonnées à partir d'une adresse
+
+```{r display_geocode}
+#| cache: false
+library(mapview)
+mapview(pt)
+```
+
+
+## Extraction de tuiles - format Raster
+
+```{r maptiles}
+#| code-line-numbers: "3,5"
+#| eval: false
+library(maptiles)
+# Define a bounding box around our address
+bbox <- st_bbox(st_buffer(pt, 500))
+# Download tiles covering the bounding box
+tiles <- get_tiles(x = bbox, project = FALSE, provider = "CartoDB.Positron", zoom = 16, crop = TRUE)
+tiles
+```
+
+```{r maptiles_cache}
+#| echo: false
+#| cache: false
+library(maptiles)
+tiles <- terra::unwrap(readRDS(file = "data/tiles.rds"))
+tiles
+```
+
+
+## Extraction de tuiles - format Raster
+
+```{r map_maptiles}
+#| fig-width: 7
+#| fig-height: 7.294
+library(mapsf)
+mf_raster(tiles)
+pt <- st_transform(pt, 3857)
+mf_map(pt, col = "darkgreen", cex = 3, add = TRUE)
+mf_credits(maptiles::get_credit("CartoDB.Positron"))
+mf_title("An address in Batman")
+```
+
+
+## Télécharger les données OSM - à partir de l'API Overpass
+
+```{r osmdata}
+#| code-line-numbers: "2-6"
+#| eval: false
+library(osmdata)
+poi <- bbox |> 
+  opq(osm_types = "node") |>
+  add_osm_feature(key = 'amenity', value = "post_office") |>
+  osmdata_sf()
+poi <- poi$osm_points
+flextable::flextable(poi, col_keys = names(poi))
+```
+
+
+```{r osmdata_cache}
+#| echo: false
+poi <- readRDS("data/poi.rds")
+flextable::flextable(poi, col_keys = names(poi))
+```
+
+
+## Télécharger les données OSM - à partir de l'API Overpass
+
+```{r map_osmdata}
+#| fig-width: 7
+#| fig-height: 7.294
+library(mapsf)
+mf_raster(tiles)
+pt <- st_transform(pt, 3857)
+poi <- st_transform(poi, 3857)
+mf_map(pt, col = "darkgreen", cex = 3, add = TRUE)
+mf_map(poi, col = "gold1", cex = 3, add = TRUE)
+mf_credits(maptiles::get_credit("CartoDB.Positron"))
+mf_title("An address and 2 post offices in Batman")
+```
+
+
+## Routage - interfacer les APIs de OSRM et de Valhalla
+
+```{r routing}
+#| code-line-numbers: "4,5"
+#| eval: false
+library(osrm)
+library(valh)
+# Shortest route from the address to the first post office
+road_o <- osrmRoute(src = pt, dst = poi[1,], osrm.profile = "bike")
+road_v <- vl_route(src = pt, dst = poi[1,], costing = "bicycle")
+road_o
+road_v
+```
+
+
+```{r routing_cache}
+#| echo: false
+road_o <- readRDS("data/road_o.rds")
+road_v <- readRDS("data/road_v.rds")
+(road_o)
+(road_v)
+```
+
+
+## Cartographier les résultats
+
+
+::: {.column}
+```{r map}
+#| fig-width: 7
+#| fig-height: 7.294
+#| eval: false
+library(mapsf)
+road_o <- st_transform(road_o, 3857)
+road_v <- st_transform(road_v, 3857)
+pt <- st_transform(pt, 3857)
+po <- st_transform(poi[1,], 3857)
+mf_raster(tiles)
+mf_map(road_o, col = "darkblue", lwd = 4, add = TRUE)
+mf_map(road_v, col = "darkred", lwd = 4, add = TRUE)
+mf_map(pt, col = "darkgreen", cex = 3, add = TRUE)
+mf_map(po, col = "gold1", cex = 3, add = TRUE)
+mf_title("A Postman in Batman")
+mf_scale(100, scale_units = "m")
+mf_credits(txt = "© OpenStreetMap contributors © CARTO")
+mf_legend(type = "typo_line", val = c("OSRM", "Valhalla"),
+          pal = c("darkblue", "darkred"), pos = "topright",
+          lwd = 4, val_cex = .8, title = NA)
+mf_text(x = pt, txt = "Home", pos = "bottom", offset = 2)
+mf_text(x = po, txt = "Post\nOffice", pos = "topright")
+```
+:::
+
+::: {.column}
+```{r map}
+#| fig-width: 7
+#| fig-height: 7.294
+#| echo: false
+
+```
+:::
+
+
+
+
+# Bonus
+
+## Using OSM with R, the cheat sheet
+
+::: {.column width="50%"}
+![](img/cheatsheet_osm_r_p1.png)
+:::
+::: {.column width="50%"}
+![](img/cheatsheet_osm_r_p2.png)
+:::
+
+:::{.notes}
+Cheat sheets are a common documentation format for R packages. 
+We've built this cheat sheet to give and overview of what is possible to do with OSM from R. 
+The first page describes the main functions of the main packages related to OSM. 
+Packages are organised by theme.
+:::
+
+
+## Using OSM with R, the cheat sheet
+
+You can download the cheat sheet using the QR code:   
+![](img/cheat_sheet_qrcode.png)
+
+https://zenodo.org/records/20842874
+
+
+
+:::{.notes}
+The cheat sheet is hosted on Zenodo, you can use the following QR code to access the page or use the link.
+:::
+
+
+
+## Thank you
+
+You can access the slides using the QR code:   
+![](img/pres_qrcode.png){fig-align="left" width=444px}
+
+https://riatecom.github.io/R_OSM_SOTM_2026/  
+
+
+![](img/logo_by-sa.svg){fig-align="right"}
+
+:::{.notes}
+You can access the slides using the QR code or with the link on screen.
+:::
+
+
+
+## References

@@ -1,0 +1,21 @@
+/*-- scss:defaults --*/
+
+
+/*-- scss:rules --*/
+
+.reveal pre {
+  font-size: .75em;
+}
+
+.reveal.smaller .slides h1 {
+  font-size: 2em;
+}
+.reveal.smaller .slides h2 {
+  font-size: 1.35em;
+}
+
+.reveal.smaller .slides ul {
+  margin-top: -0.5em;
+  margin-bottom: 0;
+
+}
