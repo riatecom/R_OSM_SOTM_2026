@@ -78,7 +78,7 @@ we'll finish with a comprehensive exemple that demonstrate how to use these pack
 - Free and open source software (GNU GPLv3)
 - Work most OS 
 - Geared towards reproducible research
-- Unified workflows
+- Unified workflows (Rstudio)
 
 :::{.notes}
 R stands out as a free and open source programming 
@@ -182,8 +182,70 @@ At last, as a statistical programming language, R allows to use a lot of spatial
 :::
 
 
-
 # R and OSM
+
+---
+
+::: columns
+
+::: {.column width="50%"}
+
+#### R
+
+A community...
+
+![](img/logo_r_bloggers.png){width="100px"}
+
+:::
+
+::: {.column width="50%"}
+
+#### OSM
+
+<br>
+
+![](img/logo_osm_forum.png){width="100px"}
+
+:::
+
+:::
+
+... that organises annual meetings...
+
+::: columns
+
+::: {.column width="50%"}
+
+![](img/logo_user.png){width="120px"}
+
+:::
+
+::: {.column width="50%"}
+
+![](img/logo_sotm.svg){width="110px"}
+
+:::
+
+:::
+
+... with local subgroups
+
+::: columns
+
+::: {.column width="50%"}
+
+![](img/logo_rr2026.png){width="100px"}
+
+:::
+
+::: {.column width="50%"}
+
+![](img/logo_sotm_fr.png){width="100px"}
+
+:::
+
+:::
+
 
 :::{.notes}
 R provides seamless access to various APIs 
@@ -239,13 +301,13 @@ We begin with packages that download and extract data, such as `osmextract` and 
 
 - [Valhalla](https://valhalla.github.io/valhalla/)
 
-- [r5](https://github.com/conveyal/r5)
+- [R5](https://github.com/conveyal/r5)
 
 - [OpenTripPlanner](https://www.opentripplanner.org/)
 
-- [openrouteservice](https://openrouteservice.org/)
+- [Openrouteservice](https://openrouteservice.org/)
 
-- [graphhopper](https://www.graphhopper.com/)
+- [GraphHopper](https://www.graphhopper.com/)
 
 <br>
 
@@ -266,11 +328,11 @@ We begin with packages that download and extract data, such as `osmextract` and 
 
 - `osrm` [@R-osrm], very fast (pre-processed routes)
 
-- `valh` [@R-valh], different algorithm
+- `valh` [@R-valh], based on tiles
 
 - `r5r` [@R-r5r], allows multimodal routing (GTFS tables)
 
-- `opentripplanner` [@R-opentripplanner]
+- `opentripplanner` [@R-opentripplanner], integrated web server
 
 <br><br>
 
@@ -292,7 +354,7 @@ and routing (OSRM with `osrm`, Valhalla with `valh`)
 
 #### OSM layers
 
-- [Tile servers](https://wiki.openstreetmap.org/wiki/Tile_servers)
+- [Tile providers](https://wiki.openstreetmap.org/wiki/Raster_tile_providers)
 
 :::
 
@@ -304,7 +366,7 @@ and routing (OSRM with `osrm`, Valhalla with `valh`)
 
 - `maptiles` [@R-maptiles], downloads raster tiles
 
-- `maposm` (not on CRAN), downloads vector objects
+- `maposm` (not on CRAN), downloads vector objects (Overpass API)
 
 :::
 
@@ -342,6 +404,7 @@ pt <- geo(address = "6 Av. Blaise Pascal, 77420 Champs-sur-Marne", method = "osm
 ## Interactive map with OSM background layer
 
 ```{r display_geocode}
+#| code-line-numbers: "2"
 #| cache: false
 library(mapview)
 mapview(pt)
@@ -374,12 +437,12 @@ tiles
 ## Plot tiles - Raster format
 
 ```{r map_maptiles}
-#| code-line-numbers: "4,5"
+#| code-line-numbers: "2-5"
 #| fig-width: 7
 #| fig-height: 7.294
 library(mapsf)
-mf_raster(tiles)
 pt <- st_transform(pt, 3857)
+mf_raster(tiles)
 mf_map(pt, col = "darkgreen", cex = 3, add = TRUE)
 mf_credits(maptiles::get_credit("CartoDB.Positron"))
 mf_title("SOTM 2026")
@@ -396,15 +459,15 @@ poi <- bbox |>
   opq(osm_types = "node") |>
   add_osm_feature(key = 'amenity', value = "post_office") |>
   osmdata_sf()
-poi <- poi$osm_points
-flextable::flextable(poi, col_keys = names(poi))
+po <- poi$osm_points
+flextable::flextable(po, col_keys = names(po))
 ```
 
 
 ```{r osmdata_cache}
 #| echo: false
-poi <- readRDS("data/poi.rds")
-flextable::flextable(poi, col_keys = names(poi))
+po <- readRDS("data/poi.rds")
+flextable::flextable(po, col_keys = names(po))
 ```
 
 
@@ -413,12 +476,11 @@ flextable::flextable(poi, col_keys = names(poi))
 ```{r map_osmdata}
 #| fig-width: 7
 #| fig-height: 7.294
-library(mapsf)
+#| code-line-numbers: "1,4"
+po <- st_transform(po[1,], 3857)
 mf_raster(tiles)
-pt <- st_transform(pt, 3857)
-poi <- st_transform(poi, 3857)
 mf_map(pt, col = "darkgreen", cex = 3, add = TRUE)
-mf_map(poi, col = "gold1", cex = 3, add = TRUE)
+mf_map(po, col = "gold1", cex = 3, add = TRUE)
 mf_credits(maptiles::get_credit("CartoDB.Positron"))
 mf_title("SOTM 2026 conference and a post office")
 ```
@@ -432,8 +494,8 @@ mf_title("SOTM 2026 conference and a post office")
 library(osrm)
 library(valh)
 # Shortest route from the address to the first post office
-road_o <- osrmRoute(src = pt, dst = poi, osrm.profile = "bike")
-road_v <- vl_route(src = pt, dst = poi, costing = "bicycle")
+road_o <- osrmRoute(src = pt, dst = po, osrm.profile = "bike")
+road_v <- vl_route(src = pt, dst = po, costing = "bicycle")
 road_o
 road_v
 ```
@@ -456,11 +518,8 @@ road_v <- readRDS("data/road_v.rds")
 #| fig-width: 7
 #| fig-height: 7.294
 #| eval: false
-library(mapsf)
 road_o <- st_transform(road_o, 3857)
 road_v <- st_transform(road_v, 3857)
-pt <- st_transform(pt, 3857)
-po <- st_transform(poi[1,], 3857)
 mf_raster(tiles)
 mf_map(road_o, col = "darkblue", lwd = 4, add = TRUE)
 mf_map(road_v, col = "darkred", lwd = 4, add = TRUE)
@@ -491,9 +550,10 @@ mf_text(x = po, txt = "Post office", pos = "right")
 ## Throwback to last year
 
 ```{r}
-#| code-line-numbers: "2"
+#| code-line-numbers: "2,3"
 # SOTM 2025 address
-pt <- geo(address = "GT-Toyota Asian Center Auditorium, Magsaysay Avenue", method = "osm")
+pt <- geo(address = "GT-Toyota Asian Center Auditorium, Magsaysay Avenue",
+          method = "osm")
 # Transform dataframe with X/Y coords to an sf object
 (pt <- st_as_sf(pt, coords = c("long", "lat"), crs = 4326))
 ```
@@ -509,30 +569,27 @@ mapview(pt)
 ```{r maptiles2}
 #| eval: false
 bbox <- st_bbox(st_buffer(pt, 500))
-tiles <- get_tiles(x = bbox, project = FALSE, provider = "CartoDB.Positron",
+tiles2 <- get_tiles(x = bbox, project = FALSE, provider = "CartoDB.Positron",
                    zoom = 16, crop = TRUE)
-tiles
+tiles2
 ```
 
 ```{r maptiles_cache2}
 #| echo: false
 #| cache: false
-tiles <- terra::rast("data/tiles2.tif")
-tiles
+tiles2 <- terra::rast("data/tiles2.tif")
+tiles2
 ```
 
 
 ## Plot tiles - Raster format
 
-!! bug avec mf_raster
 
 ```{r map_maptiles2}
-#| code-line-numbers: "4,5"
 #| fig-width: 7
 #| fig-height: 7.294
-library(mapsf)
-mf_raster(tiles)
 pt <- st_transform(pt, 3857)
+mf_raster(tiles2)
 mf_map(pt, col = "darkgreen", cex = 3, add = TRUE)
 mf_credits(maptiles::get_credit("CartoDB.Positron"))
 mf_title("SOTM 2025")
@@ -542,51 +599,46 @@ mf_title("SOTM 2025")
 ## Download OSM data - from Overpass API
 
 ```{r osmdata2}
-#| code-line-numbers: "2-6"
 #| eval: false
-library(osmdata)
 poi <- bbox |> 
   opq(osm_types = "node") |>
   add_osm_feature(key = 'amenity', value = "post_office") |>
   osmdata_sf()
-poi <- poi$osm_points
-flextable::flextable(poi, col_keys = names(poi))
+po <- poi$osm_points
+flextable::flextable(po, col_keys = names(po))
 ```
 
 
 ```{r osmdata_cache2}
 #| echo: false
-poi <- readRDS("data/poi2.rds")
-flextable::flextable(poi, col_keys = names(poi))
+po <- readRDS("data/poi2.rds")
+flextable::flextable(po, col_keys = names(po))
 ```
 
 
 ## Download OSM data - from Overpass API
 
+
 ```{r map_osmdata2}
 #| fig-width: 7
 #| fig-height: 7.294
-library(mapsf)
-mf_raster(tiles)
-pt <- st_transform(pt, 3857)
-poi <- st_transform(poi, 3857)
+po <- st_transform(po[1,], 3857)
+mf_raster(tiles2)
 mf_map(pt, col = "darkgreen", cex = 3, add = TRUE)
-mf_map(poi, col = "gold1", cex = 3, add = TRUE)
+mf_map(po, col = "gold1", cex = 3, add = TRUE)
 mf_credits(maptiles::get_credit("CartoDB.Positron"))
 mf_title("SOTM 2025 conference and a post office")
+# We can reverse geocode the post office as well
 ```
 
 
 ## Routing - interface OSRM and Valhalla APIs
 
 ```{r routing2}
-#| code-line-numbers: "4,5"
 #| eval: false
-library(osrm)
-library(valh)
 # Shortest route from the address to the first post office
-road_o <- osrmRoute(src = pt, dst = poi, osrm.profile = "bike")
-road_v <- vl_route(src = pt, dst = poi, costing = "bicycle")
+road_o <- osrmRoute(src = pt, dst = po, osrm.profile = "bike")
+road_v <- vl_route(src = pt, dst = po, costing = "bicycle")
 road_o
 road_v
 ```
@@ -609,12 +661,9 @@ road_v <- readRDS("data/road_v2.rds")
 #| fig-width: 7
 #| fig-height: 7.294
 #| eval: false
-library(mapsf)
 road_o <- st_transform(road_o, 3857)
 road_v <- st_transform(road_v, 3857)
-pt <- st_transform(pt, 3857)
-po <- st_transform(poi[1,], 3857)
-mf_raster(tiles)
+mf_raster(tiles2)
 mf_map(road_o, col = "darkblue", lwd = 4, add = TRUE)
 mf_map(road_v, col = "darkred", lwd = 4, add = TRUE)
 mf_map(pt, col = "darkgreen", cex = 3, add = TRUE)
