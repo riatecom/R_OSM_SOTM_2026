@@ -253,10 +253,18 @@ and tools for downloading and filtering OpenStreetMap data, querying shortest
 routes and itineraries, or generating both static and interactive maps.
 :::
 
+## How does it work ?
+
+![](img/r_api_osm.png){fig-align="center"}
+
 
 ## Overview
 
-![](img/OSMecosystème.png){fig-align="center"}
+![](img/OSMecosystème_v1.png){fig-align="center"}
+
+## Overview
+
+![](img/OSMecosystème_v2.png){fig-align="center"}
 
 
 ## Access to the database
@@ -588,6 +596,7 @@ tiles2
 ```{r map_maptiles2}
 #| fig-width: 7
 #| fig-height: 7.294
+#| eval: false
 pt <- st_transform(pt, 3857)
 mf_raster(tiles2)
 mf_map(pt, col = "darkgreen", cex = 3, add = TRUE)
@@ -628,7 +637,6 @@ mf_map(pt, col = "darkgreen", cex = 3, add = TRUE)
 mf_map(po, col = "gold1", cex = 3, add = TRUE)
 mf_credits(maptiles::get_credit("CartoDB.Positron"))
 mf_title("SOTM 2025 conference and a post office")
-# We can reverse geocode the post office as well
 ```
 
 
