@@ -79,6 +79,7 @@ we'll finish with a comprehensive exemple that demonstrate how to use these pack
 - Work most OS 
 - Geared towards reproducible research
 - Unified workflows (Rstudio)
+- *Packages* developed by the community (CRAN)
 
 :::{.notes}
 R stands out as a free and open source programming 
@@ -260,11 +261,7 @@ routes and itineraries, or generating both static and interactive maps.
 
 ## Overview
 
-![](img/OSMecosystème_v1.png){fig-align="center"}
-
-## Overview
-
-![](img/OSMecosystème_v2.png){fig-align="center"}
+![](img/OSMecosystème.png){fig-align="center"}
 
 
 ## Access to the database
