@@ -354,14 +354,14 @@ pt <- geo(address = "6 Av. Blaise Pascal, 77420 Champs-sur-Marne", method = "osm
 #| code-line-numbers: "2"
 #| cache: false
 library(mapview)
-mapview(pt)
+mapview(pt, map.types = "OpenStreetMap.Mapnik")
 ```
 
 
 ## Tiles extraction - Raster format
 
 ```{r maptiles}
-#| code-line-numbers: "3,5,6"
+#| code-line-numbers: "3,5,6,7"
 #| eval: false
 library(maptiles)
 # Define a bounding box around our address
